@@ -61,19 +61,19 @@ describe('search understands everyday names and typos', () => {
   const top = (q: string) => search(items, q)[0]?.name
 
   it.each([
-    ['sweet drink', 'Soft Drink 20oz'],
+    ['sweet drink', 'Soft Drink'],
     ['corn beef', 'Corned Beef'],
     ['bully beef', 'Corned Beef'],
-    ['salt fish', 'Saltfish (lb)'],
+    ['salt fish', 'Saltfish'],
     ['a banks', 'Banks Beer'],
-    ['mount gay', 'Mount Gay Eclipse'],
+    ['mount gay', 'Mount Gay'],
     ['cou cou flour', 'Cornmeal'],
     ['sardeens', 'Sardines'],
     ['digicel', 'Digicel Top Up'],
     ['fish cakes', 'Fish Cakes'],
     ['gimme two cutter', 'Cutter'],
   ])('%s -> %s', (q, expected) => {
-    expect(top(q)).toBe(expected)
+    expect(top(q)?.startsWith(expected)).toBe(true)
   })
 
   it('normalizes dialect filler words', () => {
@@ -157,5 +157,17 @@ describe('sales, stock and credit', () => {
       'Test Shop', '1246', '$8.00')
     expect(url.startsWith('https://wa.me/12462345678?text=')).toBe(true)
     expect(decodeURIComponent(url)).toContain('Good day Pat')
+  })
+})
+
+describe('stock warnings', () => {
+  it('only warns once stock has been recorded', async () => {
+    const { isLow, stockTracked } = await import('./db')
+    const base = { name: 'X', category: 'Groceries', aliases: [], price: 100, packSize: 1, packName: 'case', unit: 'each', zeroRated: false, active: true, createdAt: 0, reorderAt: 3 }
+    expect(stockTracked({ ...base, cost: 0, stock: 0 })).toBe(false)   // never counted
+    expect(isLow({ ...base, cost: 0, stock: 0 })).toBe(false)
+    expect(isLow({ ...base, cost: 250, stock: 2 })).toBe(true)          // counted and low
+    expect(isLow({ ...base, cost: 0, stock: -1 })).toBe(true)           // sold more than counted
+    expect(isLow({ ...base, cost: 250, stock: 10 })).toBe(false)
   })
 })

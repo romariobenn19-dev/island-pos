@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { Coins, Download, ShieldCheck, Store, Upload } from 'lucide-react'
 import { db, saveSettings } from '../lib/db'
 import { MoneyInput, NumberInput, Sheet, useSettings, useToast } from '../ui'
 
@@ -52,12 +53,12 @@ export function SettingsSheet({ onClose }: { onClose: () => void }) {
     <Sheet title="Settings" onClose={onClose}>
       <div className="stack">
         <div className="card stack">
-          <h3>Shop</h3>
+          <h3 className="row"><Store size={18} />Shop</h3>
           <label className="field">Shop name<input className="input" value={s.shopName} onChange={(e) => saveSettings({ shopName: e.target.value })} /></label>
           <label className="field">Shop phone<input className="input" inputMode="tel" value={s.phone} onChange={(e) => saveSettings({ phone: e.target.value })} /></label>
         </div>
         <div className="card stack">
-          <h3>Money</h3>
+          <h3 className="row"><Coins size={18} />Money &amp; VAT</h3>
           <NumberInput label="VAT %" step={0.5} value={Math.round(s.vatRate * 1000) / 10} onChange={(v) => saveSettings({ vatRate: v / 100 })} />
           <label className="check"><input type="checkbox" checked={s.pricesIncludeVat} onChange={(e) => saveSettings({ pricesIncludeVat: e.target.checked })} /> My prices already include VAT</label>
           <MoneyInput label="Value of US$1 in local money" value={Math.round(s.usdRate * 100)} onChange={(c) => saveSettings({ usdRate: c / 100 })} />
@@ -65,13 +66,13 @@ export function SettingsSheet({ onClose }: { onClose: () => void }) {
           <label className="check"><input type="checkbox" checked={s.cashRounding === 5} onChange={(e) => saveSettings({ cashRounding: e.target.checked ? 5 : 1 })} /> Round cash to 5¢ (no 1¢ coins)</label>
         </div>
         <div className="card stack">
-          <h3>Backup</h3>
+          <h3 className="row"><ShieldCheck size={18} />Backup</h3>
           <p className="small muted">Everything is saved on this device only. Make a backup each week and keep a copy (e.g. send it to yourself on WhatsApp or email) in case the phone is lost.</p>
-          <button className="btn primary block" onClick={backup}>Save a backup</button>
-          <button className="btn block" onClick={() => file.current?.click()}>Restore from backup</button>
+          <button className="btn primary block" onClick={backup}><Download size={18} />Save a backup</button>
+          <button className="btn block" onClick={() => file.current?.click()}><Upload size={18} />Restore from backup</button>
           <input ref={file} type="file" accept="application/json,.json" hidden onChange={(e) => { setPending(e.target.files?.[0] ?? null); e.target.value = '' }} />
           {pending && (
-            <div className="banner warn stack">
+            <div className="banner warn stack" style={{ alignItems: "stretch" }}>
               <span>Replace everything on this device with "{pending.name}"?</span>
               <div className="row">
                 <button className="btn danger grow" onClick={() => restore(pending)}>Yes, replace</button>

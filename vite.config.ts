@@ -12,6 +12,10 @@ export default defineConfig({
     react(),
     !demo && VitePWA({
       registerType: 'autoUpdate',
+      workbox: {
+        // app files plus the Latin font files, so the typefaces work offline too
+        globPatterns: ['**/*.{js,css,html,svg}', '**/*-latin-wght-normal*.woff2'],
+      },
       includeAssets: ['icon.svg'],
       manifest: {
         name: 'Island POS',

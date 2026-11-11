@@ -124,6 +124,15 @@ export class PosDB extends Dexie {
 
 export const db = new PosDB()
 
+/** Stock warnings only make sense once an item's stock has been recorded. */
+export function stockTracked(p: Product): boolean {
+  return p.cost > 0 || p.stock !== 0
+}
+
+export function isLow(p: Product): boolean {
+  return stockTracked(p) && p.stock <= p.reorderAt
+}
+
 export async function getSettings(d: PosDB = db): Promise<Settings> {
   return (await d.settings.get('shop')) ?? DEFAULT_SETTINGS
 }
